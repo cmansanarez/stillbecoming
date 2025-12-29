@@ -7,7 +7,7 @@ export class ParticleSystem {
     this.seed = seedManager;
 
     this.particles = [];
-    this.maxParticles = 120;
+    this.maxParticles = 300; // Increased from 120
 
     // Initialize particles
     for (let i = 0; i < this.maxParticles; i++) {
@@ -25,7 +25,7 @@ export class ParticleSystem {
       vx: this.seed.randRange(-0.001, 0.001),
       vy: this.seed.randRange(-0.001, 0.001),
       life: this.seed.randRange(0.5, 1.0),
-      size: this.seed.randRange(0.0008, 0.002),
+      size: this.seed.randRange(0.002, 0.008), // Increased from 0.0008-0.002 to 0.002-0.008
       path: [], // Trail of previous positions
       active: false
     };
@@ -76,9 +76,9 @@ export class ParticleSystem {
         p.y = maxDist * 0.5 * Math.sin(angle);
       }
 
-      // Store trail
+      // Store trail (longer trails for more visible drawing)
       p.path.push({ x: p.x, y: p.y });
-      if (p.path.length > 5) {
+      if (p.path.length > 20) {
         p.path.shift();
       }
 
@@ -115,10 +115,10 @@ export class ParticleSystem {
 
       this.p.circle(x, y, size);
 
-      // Render trail (very faint)
+      // Render trail (more visible)
       if (p.path.length > 1) {
-        this.p.stroke(colors.periwinkle.r, colors.periwinkle.g, colors.periwinkle.b, alpha * 0.3);
-        this.p.strokeWeight(unit * 0.0003);
+        this.p.stroke(colors.periwinkle.r, colors.periwinkle.g, colors.periwinkle.b, alpha * 0.6);
+        this.p.strokeWeight(unit * 0.0008); // Increased from 0.0003
         this.p.noFill();
 
         this.p.beginShape();
