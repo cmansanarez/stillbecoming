@@ -2,12 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>stillbecoming</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
+  <!-- Welcome Modal -->
+  <div id="welcome-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h1 class="modal-title">stillbecoming</h1>
+
+      <div class="modal-text">
+        <p>This is stillbecoming.</p>
+
+        <p>A generative ritual offered in celebration of your life.<br>
+        Not to mark a destination, but to honor the arc you are moving through.</p>
+
+        <p>Your life, like sacred geometry, is shaped by repetition, deviation, and quiet moments of transformation. Order gives way to noise. Noise finds its way back to form.</p>
+
+        <p>What you witness here is a brief performance.<br>
+        What remains is a relic of that becoming.</p>
+
+        <p>May this piece remind you that growth is not linear,<br>
+        and that you are always in the act of becoming more yourself.</p>
+      </div>
+
+      <button id="begin-btn" class="modal-button">Begin</button>
+    </div>
+  </div>
+
+  <!-- Mobile Warning Modal -->
+  <div id="mobile-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content mobile-modal-content">
+      <div class="modal-text">
+        <p>You're welcome to continue here,<br>
+        but this piece is best experienced on a larger screen.</p>
+
+        <p>The ritual unfolds slowly, with details and depth that benefit from space.<br>
+        If you're able, we invite you to return on a desktop or laptop<br>
+        and witness the full becoming.</p>
+
+        <p>Whether now or later,<br>
+        the moment will be waiting.</p>
+
+        <p class="mobile-url">Visit <span class="url-text">stillbecoming.noirmak.com</span> to continue.</p>
+      </div>
+
+      <div class="modal-buttons">
+        <button id="mobile-continue-btn" class="modal-button">Continue</button>
+        <button id="mobile-later-btn" class="modal-button modal-button-secondary">Return later</button>
+      </div>
+    </div>
+  </div>
+
   <div id="canvas-container"></div>
 
   <div id="ui-overlay">

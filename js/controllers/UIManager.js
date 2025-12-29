@@ -6,8 +6,85 @@ export class UIManager {
     this.editionLabel = document.getElementById('edition-label');
     this.timestampLabel = document.getElementById('timestamp-label');
     this.downloadBtn = document.getElementById('download-btn');
+    this.mobileModal = document.getElementById('mobile-modal');
 
     this.isRelicState = false;
+    this.isMobileDevice = this._detectMobile();
+    this.mobileAcknowledged = localStorage.getItem('stillbecoming_mobile_ack') === 'true';
+  }
+
+  /**
+   * Detect if user is on mobile device
+   */
+  _detectMobile() {
+    // Check multiple conditions for mobile detection
+    const isSmallScreen = window.innerWidth < 900;
+    const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    return isSmallScreen || isCoarsePointer || isMobileUA;
+  }
+
+  /**
+   * Check if mobile modal should be shown
+   */
+  shouldShowMobileModal() {
+    return this.isMobileDevice && !this.mobileAcknowledged;
+  }
+
+  /**
+   * Show mobile warning modal
+   */
+  showMobileModal(onContinue, onReturnLater) {
+    if (!this.mobileModal) return;
+
+    this.mobileModal.style.display = 'flex';
+
+    const continueBtn = document.getElementById('mobile-continue-btn');
+    const laterBtn = document.getElementById('mobile-later-btn');
+
+    if (continueBtn) {
+      continueBtn.onclick = () => {
+        this.hideMobileModal();
+        localStorage.setItem('stillbecoming_mobile_ack', 'true');
+        this.mobileAcknowledged = true;
+        if (onContinue) onContinue();
+      };
+    }
+
+    if (laterBtn) {
+      laterBtn.onclick = () => {
+        // Try to close the tab/window
+        if (window.close) {
+          window.close();
+        }
+
+        // If window.close() doesn't work (most modern browsers block it),
+        // show a gentle message by changing button text
+        setTimeout(() => {
+          if (laterBtn) {
+            laterBtn.textContent = 'You can return anytime';
+            laterBtn.disabled = true;
+            laterBtn.style.opacity = '0.6';
+            laterBtn.style.cursor = 'default';
+          }
+        }, 100);
+
+        if (onReturnLater) onReturnLater();
+      };
+    }
+  }
+
+  /**
+   * Hide mobile modal
+   */
+  hideMobileModal() {
+    if (this.mobileModal) {
+      this.mobileModal.classList.add('fade-out');
+      setTimeout(() => {
+        this.mobileModal.style.display = 'none';
+      }, 800);
+    }
   }
 
   showEditionLabel(text) {

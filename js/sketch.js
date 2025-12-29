@@ -49,6 +49,7 @@ export function sketch(p) {
   // Ritual state
   let ritualTimestamp = null;
   let timestampFormatted = null;
+  let ritualStarted = false; // Pause ritual until user clicks "Begin"
 
   /**
    * Setup
@@ -60,7 +61,10 @@ export function sketch(p) {
 
     // Create WEBGL canvas
     p.createCanvas(canvasSize, canvasSize, p.WEBGL);
-    p.pixelDensity(1); // Keep reasonable for performance
+
+    // Set pixel density based on device (cap at 2 for performance on mobile)
+    const isMobile = window.innerWidth < 900 || /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    p.pixelDensity(Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 2));
 
     // Initialize managers
     seedManager = new SeedManager();
@@ -68,6 +72,9 @@ export function sketch(p) {
     ritualController = new RitualController();
     uiManager = new UIManager();
     exportManager = new ExportManager(p);
+
+    // Check if mobile modal should be shown
+    const shouldShowMobileWarning = uiManager.shouldShowMobileModal();
 
     // Initialize systems
     geometrySystem = new GeometrySystem(p, seedManager);
@@ -87,6 +94,48 @@ export function sketch(p) {
     // Initialize time tracking
     lastFrameTime = p.millis();
 
+    // Set up welcome modal "Begin" button
+    const welcomeModal = document.getElementById('welcome-modal');
+    const beginBtn = document.getElementById('begin-btn');
+
+    // Function to start the ritual (called from either modal)
+    const startRitual = () => {
+      if (welcomeModal) {
+        welcomeModal.classList.add('fade-out');
+        setTimeout(() => {
+          welcomeModal.style.display = 'none';
+        }, 800);
+      }
+      ritualStarted = true;
+      lastFrameTime = p.millis();
+    };
+
+    // If mobile modal should be shown, show it first
+    if (shouldShowMobileWarning) {
+      // Hide welcome modal initially
+      if (welcomeModal) {
+        welcomeModal.style.display = 'none';
+      }
+
+      // Show mobile modal
+      uiManager.showMobileModal(
+        () => {
+          // On continue: show welcome modal
+          if (welcomeModal) {
+            welcomeModal.style.display = 'flex';
+          }
+        },
+        () => {
+          // On return later: do nothing (tab close was attempted)
+        }
+      );
+    }
+
+    // Set up begin button
+    if (beginBtn && welcomeModal) {
+      beginBtn.addEventListener('click', startRitual);
+    }
+
     console.log('stillbecoming initialized');
     console.log('Edition:', editionManager.getEditionNumber());
     console.log('Seed:', seedManager.seedString);
@@ -96,6 +145,13 @@ export function sketch(p) {
    * Draw loop
    */
   p.draw = function() {
+    // Don't update ritual until user has clicked "Begin"
+    if (!ritualStarted) {
+      // Just render static background while waiting
+      p.background(COLORS.carbon.r, COLORS.carbon.g, COLORS.carbon.b);
+      return;
+    }
+
     // Calculate delta time
     const currentTime = p.millis();
     deltaTime = (currentTime - lastFrameTime) / 1000; // Convert to seconds
