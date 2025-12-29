@@ -10,6 +10,10 @@ export class GridSystem {
     this.gridSize = Math.floor(seedManager.randRange(16, 24)); // 16-24 cells
     this.gridExtent = 0.6; // Cover more of the canvas
 
+    // Randomize grid line colors per edition
+    this.innerGridColor = Math.floor(seedManager.randRange(0, 3)); // 0=twilight, 1=periwinkle, 2=ghost
+    this.outerGridColor = Math.floor(seedManager.randRange(0, 3));
+
     // Generate some grid cells with fills (like colored squares in references)
     this.filledCells = [];
     this._generateFilledCells();
@@ -60,12 +64,28 @@ export class GridSystem {
   }
 
   /**
+   * Get color from palette with destabilization cycling
+   */
+  _getGridColor(colorIndex, colors, glitchRate) {
+    // During high glitch, cycle through colors
+    if (glitchRate > 0.3) {
+      const cycle = Math.floor(this.p.millis() * 0.003 + colorIndex) % 3;
+      colorIndex = cycle;
+    }
+
+    if (colorIndex === 0) return colors.twilight;
+    if (colorIndex === 1) return colors.periwinkle;
+    return colors.ghost; // 2 = ghost white
+  }
+
+  /**
    * Render the grid system
    */
   render(params, unit, colors) {
     const visibility = params.gridVisibility;
     const noiseAmp = params.noiseAmp;
     const zLift = params.zLiftStrength;
+    const glitchRate = params.glitchRate;
 
     if (visibility <= 0) return;
 
@@ -83,13 +103,24 @@ export class GridSystem {
       this._renderFilledCells(visibility, unit, colors, cellSize);
     }
 
-    // Draw main grid lines (more prominent now)
-    this.p.stroke(colors.twilight.r, colors.twilight.g, colors.twilight.b, visibility * 140);
+    // Draw main grid lines with position-based colors
     this.p.strokeWeight(unit * 0.0015); // Thicker grid lines
+
+    const centerThreshold = this.gridSize * 0.3; // Inner 30% region
 
     // Vertical lines
     for (let i = 0; i <= this.gridSize; i++) {
       const x = -this.gridExtent * unit + i * cellSize;
+
+      // Determine if this is an inner or outer line
+      const distFromCenter = Math.abs(i - this.gridSize / 2);
+      const isInner = distFromCenter < centerThreshold;
+
+      // Get color based on position
+      const colorIndex = isInner ? this.innerGridColor : this.outerGridColor;
+      const lineColor = this._getGridColor(colorIndex, colors, glitchRate);
+
+      this.p.stroke(lineColor.r, lineColor.g, lineColor.b, visibility * 140);
 
       this.p.beginShape();
       for (let j = 0; j <= this.gridSize; j++) {
@@ -115,6 +146,16 @@ export class GridSystem {
     for (let j = 0; j <= this.gridSize; j++) {
       const y = -this.gridExtent * unit + j * cellSize;
 
+      // Determine if this is an inner or outer line
+      const distFromCenter = Math.abs(j - this.gridSize / 2);
+      const isInner = distFromCenter < centerThreshold;
+
+      // Get color based on position
+      const colorIndex = isInner ? this.innerGridColor : this.outerGridColor;
+      const lineColor = this._getGridColor(colorIndex, colors, glitchRate);
+
+      this.p.stroke(lineColor.r, lineColor.g, lineColor.b, visibility * 140);
+
       this.p.beginShape();
       for (let i = 0; i <= this.gridSize; i++) {
         const x = -this.gridExtent * unit + i * cellSize;
@@ -137,7 +178,7 @@ export class GridSystem {
 
     // Draw accent lines (thicker boundary lines every few cells, like in references)
     if (visibility > 0.5) {
-      this._renderAccentLines(visibility, unit, colors, cellSize);
+      this._renderAccentLines(visibility, unit, colors, cellSize, glitchRate);
     }
 
     // Draw detached fragments
@@ -163,12 +204,15 @@ export class GridSystem {
     }
   }
 
-  _renderAccentLines(visibility, unit, colors, cellSize) {
+  _renderAccentLines(visibility, unit, colors, cellSize, glitchRate) {
     // Draw thicker lines every 4 cells (like major grid divisions)
     const accentInterval = 4;
 
-    this.p.stroke(colors.twilight.r, colors.twilight.g, colors.twilight.b, visibility * 200);
     this.p.strokeWeight(unit * 0.003);
+
+    // Accent lines use outer grid color
+    const accentColor = this._getGridColor(this.outerGridColor, colors, glitchRate);
+    this.p.stroke(accentColor.r, accentColor.g, accentColor.b, visibility * 200);
 
     // Vertical accent lines
     for (let i = 0; i <= this.gridSize; i += accentInterval) {
