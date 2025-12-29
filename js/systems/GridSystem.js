@@ -79,6 +79,15 @@ export class GridSystem {
   }
 
   /**
+   * Get static color from palette (for export, no animation)
+   */
+  _getColorStatic(colorIndex, colors) {
+    if (colorIndex === 0) return colors.twilight;
+    if (colorIndex === 1) return colors.periwinkle;
+    return colors.ghost; // 2 = ghost white
+  }
+
+  /**
    * Render the grid system
    */
   render(params, unit, colors) {
@@ -288,13 +297,24 @@ export class GridSystem {
       pg.rect(x, y, cellSize, cellSize);
     }
 
-    // Main grid lines
-    pg.stroke(colors.twilight.r, colors.twilight.g, colors.twilight.b, visibility * 140);
+    // Main grid lines with position-based colors
     pg.strokeWeight(unit * 0.0015);
+
+    const centerThreshold = this.gridSize * 0.3; // Inner 30% region
 
     // Vertical lines
     for (let i = 0; i <= this.gridSize; i++) {
       const x = -this.gridExtent * unit + i * cellSize;
+
+      // Determine if this is an inner or outer line
+      const distFromCenter = Math.abs(i - this.gridSize / 2);
+      const isInner = distFromCenter < centerThreshold;
+
+      // Get color based on position (no glitch cycling in export)
+      const colorIndex = isInner ? this.innerGridColor : this.outerGridColor;
+      const lineColor = this._getColorStatic(colorIndex, colors);
+
+      pg.stroke(lineColor.r, lineColor.g, lineColor.b, visibility * 140);
 
       pg.beginShape();
       for (let j = 0; j <= this.gridSize; j++) {
@@ -319,6 +339,16 @@ export class GridSystem {
     for (let j = 0; j <= this.gridSize; j++) {
       const y = -this.gridExtent * unit + j * cellSize;
 
+      // Determine if this is an inner or outer line
+      const distFromCenter = Math.abs(j - this.gridSize / 2);
+      const isInner = distFromCenter < centerThreshold;
+
+      // Get color based on position (no glitch cycling in export)
+      const colorIndex = isInner ? this.innerGridColor : this.outerGridColor;
+      const lineColor = this._getColorStatic(colorIndex, colors);
+
+      pg.stroke(lineColor.r, lineColor.g, lineColor.b, visibility * 140);
+
       pg.beginShape();
       for (let i = 0; i <= this.gridSize; i++) {
         const x = -this.gridExtent * unit + i * cellSize;
@@ -337,9 +367,10 @@ export class GridSystem {
       pg.endShape();
     }
 
-    // Accent lines
+    // Accent lines with outer grid color
     const accentInterval = 4;
-    pg.stroke(colors.twilight.r, colors.twilight.g, colors.twilight.b, visibility * 200);
+    const accentColor = this._getColorStatic(this.outerGridColor, colors);
+    pg.stroke(accentColor.r, accentColor.g, accentColor.b, visibility * 200);
     pg.strokeWeight(unit * 0.003);
 
     for (let i = 0; i <= this.gridSize; i += accentInterval) {

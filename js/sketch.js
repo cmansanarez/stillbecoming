@@ -289,8 +289,9 @@ export function sketch(p) {
       pg.push();
 
       // Render all systems to graphics buffer
-      geometrySystem.renderToGraphics(pg, params, exportUnit, COLORS);
+      // Grid behind geometry (matching RELIC state rendering order)
       gridSystem.renderToGraphics(pg, params, exportUnit, COLORS);
+      geometrySystem.renderToGraphics(pg, params, exportUnit, COLORS);
       particleSystem.renderToGraphics(pg, params, exportUnit, COLORS);
       weatheringPass.renderToGraphics(pg, params, exportUnit, COLORS);
 
