@@ -141,11 +141,25 @@ export function sketch(p) {
     // Apply camera transforms
     cameraRig.apply();
 
-    // Render layers in order
-    geometrySystem.render(params, unit, COLORS);
-    gridSystem.render(params, unit, COLORS);
-    particleSystem.render(params, unit, COLORS);
-    weatheringPass.render(params, unit, COLORS);
+    // Get current ritual state
+    const currentState = ritualController.getStateName();
+
+    // Render layers in order - grid goes behind geometry during resolution
+    const resolutionStates = ['REASSEMBLE', 'CONSECRATE_2D', 'RELIC'];
+
+    if (resolutionStates.includes(currentState)) {
+      // During resolution: grid behind, then geometry on top
+      gridSystem.render(params, unit, COLORS);
+      geometrySystem.render(params, unit, COLORS);
+      particleSystem.render(params, unit, COLORS);
+    } else {
+      // During build-up: normal layering
+      geometrySystem.render(params, unit, COLORS);
+      gridSystem.render(params, unit, COLORS);
+      particleSystem.render(params, unit, COLORS);
+    }
+
+    weatheringPass.render(params, unit, COLORS, currentState);
 
     p.pop();
   }

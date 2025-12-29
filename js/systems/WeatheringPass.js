@@ -52,9 +52,10 @@ export class WeatheringPass {
   /**
    * Render weathering effects
    */
-  render(params, unit, colors) {
+  render(params, unit, colors, ritualStateName) {
     const amount = params.weatheringAmount;
     const glitchRate = params.glitchRate;
+    const noiseAmp = params.noiseAmp;
 
     if (amount <= 0) return;
 
@@ -63,6 +64,12 @@ export class WeatheringPass {
     // Render aged paper stains first (background layer)
     if (amount > 0.2) {
       this._renderStains(amount, unit, colors);
+    }
+
+    // Apply dithering effect during resolution (REASSEMBLE, CONSECRATE_2D, RELIC)
+    const ditheringStates = ['REASSEMBLE', 'CONSECRATE_2D', 'RELIC'];
+    if (ditheringStates.includes(ritualStateName)) {
+      this._renderDithering(amount, unit, noiseAmp);
     }
 
     // Apply subtle grain texture
@@ -95,6 +102,28 @@ export class WeatheringPass {
         this.p.fill(color.r, color.g, color.b, alpha);
         this.p.circle(x, y, size * t);
       }
+    }
+  }
+
+  _renderDithering(amount, unit, noiseAmp) {
+    // Apply ordered dithering pattern for soft blur effect during resolution
+    const ditherDensity = 400;
+    const ditherAlpha = amount * 35; // Increased from 20
+    const ditherSize = unit * 0.008; // Increased from 0.003 for more visible effect
+
+    for (let i = 0; i < ditherDensity * amount; i++) {
+      const x = this.p.random(-unit * 0.6, unit * 0.6);
+      const y = this.p.random(-unit * 0.6, unit * 0.6);
+
+      // Use noise to create organic dithering pattern
+      const noiseVal = this.p.noise(x * 0.01, y * 0.01, this.p.millis() * 0.0001);
+
+      // Create subtle blur by drawing semi-transparent white dots
+      const brightness = this.p.map(noiseVal, 0, 1, 220, 255);
+
+      this.p.noStroke();
+      this.p.fill(brightness, brightness, brightness, ditherAlpha);
+      this.p.circle(x, y, ditherSize);
     }
   }
 
