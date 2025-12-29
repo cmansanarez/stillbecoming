@@ -1,0 +1,27 @@
+Build a static website project using p5.js that runs a generative “glitch ritual” artwork. Use a clean modular architecture with ES modules.
+
+Key requirements:
+- Always use WEBGL renderer but simulate 2D early by keeping camera tilt and Z offsets at zero.
+- Implement a finite state machine RitualController with states:
+  BOOT, TITLE, INVOKE_2D, BLOOM_BUILD, GRID_ASSERT, BREACH_3D, DESTABILIZE, REASSEMBLE, CONSECRATE_2D, RELIC.
+  Each state has a duration and sets targets for:
+  camera tilt, zoom, zLiftStrength, noiseAmp, glitchRate, geometryCompletion, gridVisibility, particleEnergy, weatheringAmount.
+  Use easing between targets.
+- SeedManager:
+  masterSeed constant string. Create/stash session seed. Provide deterministic random + set noiseSeed.
+- EditionManager:
+  cap = 100. Store visitorToken in localStorage (UUID). Compute edition = hash(visitorToken + masterSeed) % 100 + 1.
+  Display as “Edition 0XX of 100” (3 digits).
+- Render layers:
+  GeometrySystem: Fibonacci spiral anchors + drafted polar petal modules. Progressive draw based on geometryCompletion.
+  GridSystem: minimal grid field that melts under noise and can detach a few fragments in 3D during destabilize.
+  ParticleSystem: particles trace edges like a pen; increases during build; chases fragments during destabilize; decays.
+  WeatheringPass: subtle grain/dither and micro-glitch residue; strongest during consecrate and relic.
+- When RELIC state begins:
+  freeze simulation, store a timestamp string (YYYY.MM.DD HH:MM local) and render it on the canvas.
+  Show a “Download relic” button.
+- Export:
+  Square PNG at 3000x3000 using an offscreen p5.Graphics WEBGL buffer. Render a single relic frame into it including edition + timestamp and save with filename like:
+  cam-bday-ed0XX-YYYYMMDD-HHMM.png
+- Keep layout centered with generous negative space. Minimal, architectural vibe.
+Deliver: full code for index.html, styles.css, and all JS modules, ready to run locally with no build step.

@@ -1,0 +1,95 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background: #1c1c1f;
+  color: #f9f9fe;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#canvas-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#ui-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+#edition-label {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  opacity: 0.65;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+#timestamp-label {
+  position: absolute;
+  top: 4%;
+  right: 4%;
+  font-size: 10px;
+  letter-spacing: 1px;
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+#download-btn {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid #9381ff;
+  color: #9381ff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+#download-btn:hover {
+  background: #9381ff;
+  color: #1c1c1f;
+}
+
+#download-btn:active {
+  transform: translateX(-50%) scale(0.98);
+}
+
+.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+canvas {
+  display: block;
+}
