@@ -25,7 +25,7 @@ export class ParticleSystem {
       vx: this.seed.randRange(-0.001, 0.001),
       vy: this.seed.randRange(-0.001, 0.001),
       life: this.seed.randRange(0.5, 1.0),
-      size: this.seed.randRange(0.002, 0.008), // Increased from 0.0008-0.002 to 0.002-0.008
+      size: this.seed.randRange(0.006, 0.032), // 3-4x larger with varying sizes
       path: [], // Trail of previous positions
       active: false
     };

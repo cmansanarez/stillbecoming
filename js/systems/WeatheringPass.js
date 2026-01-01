@@ -55,7 +55,6 @@ export class WeatheringPass {
   render(params, unit, colors, ritualStateName) {
     const amount = params.weatheringAmount;
     const glitchRate = params.glitchRate;
-    const noiseAmp = params.noiseAmp;
 
     if (amount <= 0) return;
 
@@ -66,10 +65,10 @@ export class WeatheringPass {
       this._renderStains(amount, unit, colors);
     }
 
-    // Apply dithering effect during resolution (REASSEMBLE, CONSECRATE_2D, RELIC)
-    const ditheringStates = ['REASSEMBLE', 'CONSECRATE_2D', 'RELIC'];
-    if (ditheringStates.includes(ritualStateName)) {
-      this._renderDithering(amount, unit, noiseAmp);
+    // Apply pixelation effect during resolution (REASSEMBLE, CONSECRATE_2D, RELIC)
+    const pixelationStates = ['REASSEMBLE', 'CONSECRATE_2D', 'RELIC'];
+    if (pixelationStates.includes(ritualStateName)) {
+      this._renderPixelation(amount, unit);
     }
 
     // Apply subtle grain texture
@@ -105,25 +104,28 @@ export class WeatheringPass {
     }
   }
 
-  _renderDithering(amount, unit, noiseAmp) {
-    // Apply ordered dithering pattern for soft blur effect during resolution
-    const ditherDensity = 400;
-    const ditherAlpha = amount * 35; // Increased from 20
-    const ditherSize = unit * 0.008; // Increased from 0.003 for more visible effect
+  _renderPixelation(amount, unit) {
+    // Apply subtle pixelation overlay effect during resolution
+    // This creates a mosaic-like texture without affecting the export
+    const pixelSize = unit * 0.015; // Size of each pixel block
+    const gridExtent = unit * 0.6;
+    const steps = Math.floor((gridExtent * 2) / pixelSize);
 
-    for (let i = 0; i < ditherDensity * amount; i++) {
-      const x = this.p.random(-unit * 0.6, unit * 0.6);
-      const y = this.p.random(-unit * 0.6, unit * 0.6);
+    this.p.noStroke();
 
-      // Use noise to create organic dithering pattern
-      const noiseVal = this.p.noise(x * 0.01, y * 0.01, this.p.millis() * 0.0001);
+    for (let i = 0; i < steps; i++) {
+      for (let j = 0; j < steps; j++) {
+        const x = -gridExtent + i * pixelSize;
+        const y = -gridExtent + j * pixelSize;
 
-      // Create subtle blur by drawing semi-transparent white dots
-      const brightness = this.p.map(noiseVal, 0, 1, 220, 255);
+        // Sample random brightness for each pixel
+        const brightness = this.p.random(0, 50);
+        const alpha = amount * brightness * 0.15;
 
-      this.p.noStroke();
-      this.p.fill(brightness, brightness, brightness, ditherAlpha);
-      this.p.circle(x, y, ditherSize);
+        // Draw semi-transparent pixel blocks
+        this.p.fill(brightness, brightness, brightness, alpha);
+        this.p.rect(x, y, pixelSize, pixelSize);
+      }
     }
   }
 
