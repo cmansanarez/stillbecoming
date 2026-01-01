@@ -52,7 +52,7 @@ const STATES = {
   BREACH_3D: {
     duration: 3.0,
     targets: {
-      cameraTiltX: 0.15, cameraTiltY: 0.1, cameraZoom: 0.95,
+      cameraTiltX: 0.4, cameraTiltY: 0.3, cameraZoom: 0.65,
       zLiftStrength: 0.6, noiseAmp: 0.12, glitchRate: 0.15,
       geometryCompletion: 1.0, gridVisibility: 1.0,
       particleEnergy: 1.0, weatheringAmount: 0.25
@@ -61,7 +61,7 @@ const STATES = {
   DESTABILIZE: {
     duration: 5.0,
     targets: {
-      cameraTiltX: 0.2, cameraTiltY: 0.15, cameraZoom: 0.9,
+      cameraTiltX: 0.5, cameraTiltY: 0.4, cameraZoom: 0.55,
       zLiftStrength: 1.0, noiseAmp: 0.3, glitchRate: 0.4,
       geometryCompletion: 1.0, gridVisibility: 0.7,
       particleEnergy: 1.2, weatheringAmount: 0.4

@@ -53,6 +53,25 @@ body {
   transition: opacity 0.8s ease;
 }
 
+#progress-bar-container {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 2px;
+  background: rgba(147, 129, 255, 0.2);
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+#progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: rgba(147, 129, 255, 0.6);
+  transition: width 0.3s ease;
+}
+
 #timestamp-label {
   position: absolute;
   top: 4%;

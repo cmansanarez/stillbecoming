@@ -91,6 +91,9 @@ export function sketch(p) {
     // Show edition label at start
     uiManager.showEditionLabel(editionManager.getEditionLabel());
 
+    // Show progress bar at start
+    uiManager.showProgressBar();
+
     // Initialize time tracking
     lastFrameTime = p.millis();
 
@@ -180,6 +183,10 @@ export function sketch(p) {
     // Update camera rig
     cameraRig.update(params.cameraTiltX, params.cameraTiltY, params.cameraZoom);
 
+    // Update progress bar
+    const progress = ritualController.getGlobalProgress();
+    uiManager.updateProgressBar(progress);
+
     // Render scene
     renderScene(params);
   };
@@ -242,6 +249,9 @@ export function sketch(p) {
 
     // Handle RELIC state
     if (stateName === 'RELIC') {
+      // Hide progress bar when ritual is complete
+      uiManager.hideProgressBar();
+
       // Ensure timestamp is set
       if (!ritualTimestamp) {
         ritualTimestamp = ritualController.getCompletionTimestamp() || new Date();

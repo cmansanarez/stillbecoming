@@ -7,6 +7,8 @@ export class UIManager {
     this.timestampLabel = document.getElementById('timestamp-label');
     this.downloadBtn = document.getElementById('download-btn');
     this.mobileModal = document.getElementById('mobile-modal');
+    this.progressBarContainer = document.getElementById('progress-bar-container');
+    this.progressBarFill = document.getElementById('progress-bar-fill');
 
     this.isRelicState = false;
     this.isMobileDevice = this._detectMobile();
@@ -145,6 +147,25 @@ export class UIManager {
   setTimestampOpacity(opacity) {
     if (this.timestampLabel) {
       this.timestampLabel.style.opacity = opacity;
+    }
+  }
+
+  showProgressBar() {
+    if (this.progressBarContainer) {
+      this.progressBarContainer.classList.remove('hidden');
+    }
+  }
+
+  hideProgressBar() {
+    if (this.progressBarContainer) {
+      this.progressBarContainer.classList.add('hidden');
+    }
+  }
+
+  updateProgressBar(progress) {
+    if (this.progressBarFill) {
+      // progress is 0-1, convert to percentage
+      this.progressBarFill.style.width = `${progress * 100}%`;
     }
   }
 }
