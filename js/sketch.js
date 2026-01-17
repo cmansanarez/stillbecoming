@@ -8,6 +8,7 @@ import { EditionManager } from './controllers/EditionManager.js';
 import { RitualController } from './controllers/RitualController.js';
 import { UIManager } from './controllers/UIManager.js';
 import { ExportManager } from './controllers/ExportManager.js';
+import { AudioManager } from './controllers/AudioManager.js';
 import { GeometrySystem } from './systems/GeometrySystem.js';
 import { GridSystem } from './systems/GridSystem.js';
 import { ParticleSystem } from './systems/ParticleSystem.js';
@@ -31,6 +32,7 @@ export function sketch(p) {
   let ritualController;
   let uiManager;
   let exportManager;
+  let audioManager;
 
   let geometrySystem;
   let gridSystem;
@@ -72,6 +74,7 @@ export function sketch(p) {
     ritualController = new RitualController();
     uiManager = new UIManager();
     exportManager = new ExportManager(p);
+    audioManager = new AudioManager('audio/remembering me.m4a');
 
     // Check if mobile modal should be shown
     const shouldShowMobileWarning = uiManager.shouldShowMobileModal();
@@ -94,6 +97,16 @@ export function sketch(p) {
     // Show progress bar at start
     uiManager.showProgressBar();
 
+    // Show audio controls
+    uiManager.showAudioCredit();
+    uiManager.showMuteButton();
+
+    // Set up mute button
+    uiManager.setupMuteButton(() => {
+      const isMuted = audioManager.toggleMute();
+      uiManager.setMuteButtonState(isMuted);
+    });
+
     // Initialize time tracking
     lastFrameTime = p.millis();
 
@@ -111,6 +124,9 @@ export function sketch(p) {
       }
       ritualStarted = true;
       lastFrameTime = p.millis();
+
+      // Start audio playback
+      audioManager.play();
     };
 
     // If mobile modal should be shown, show it first

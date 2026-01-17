@@ -9,6 +9,8 @@ export class UIManager {
     this.mobileModal = document.getElementById('mobile-modal');
     this.progressBarContainer = document.getElementById('progress-bar-container');
     this.progressBarFill = document.getElementById('progress-bar-fill');
+    this.audioCredit = document.getElementById('audio-credit');
+    this.muteBtn = document.getElementById('mute-btn');
 
     this.isRelicState = false;
     this.isMobileDevice = this._detectMobile();
@@ -166,6 +168,50 @@ export class UIManager {
     if (this.progressBarFill) {
       // progress is 0-1, convert to percentage
       this.progressBarFill.style.width = `${progress * 100}%`;
+    }
+  }
+
+  showAudioCredit() {
+    if (this.audioCredit) {
+      this.audioCredit.classList.remove('hidden');
+    }
+  }
+
+  hideAudioCredit() {
+    if (this.audioCredit) {
+      this.audioCredit.classList.add('hidden');
+    }
+  }
+
+  showMuteButton() {
+    if (this.muteBtn) {
+      this.muteBtn.classList.remove('hidden');
+    }
+  }
+
+  hideMuteButton() {
+    if (this.muteBtn) {
+      this.muteBtn.classList.add('hidden');
+    }
+  }
+
+  setMuteButtonState(isMuted) {
+    if (this.muteBtn) {
+      const icon = this.muteBtn.querySelector('.mute-icon');
+      if (icon) {
+        icon.textContent = isMuted ? '🔇' : '🔊';
+      }
+      if (isMuted) {
+        this.muteBtn.classList.add('muted');
+      } else {
+        this.muteBtn.classList.remove('muted');
+      }
+    }
+  }
+
+  setupMuteButton(callback) {
+    if (this.muteBtn) {
+      this.muteBtn.onclick = callback;
     }
   }
 }
